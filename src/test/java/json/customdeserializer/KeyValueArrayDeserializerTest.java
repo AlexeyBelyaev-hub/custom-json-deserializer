@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,6 +36,10 @@ class KeyValueArrayDeserializerTest {
                         "            {\n" +
                         "                \"column\": \"oldOid\",\n" +
                         "                \"value\": \"2\"\n" +
+                        "            }," +
+                        " {\n" +
+                        "                \"column\": \"createDate\",\n" +
+                        "                \"value\": \"16.10.2016\"\n" +
                         "            }" +
                         "        ]";
 
@@ -50,6 +55,7 @@ class KeyValueArrayDeserializerTest {
                 "Company 1",
                 org.getNameFull());
         assertEquals("C1", org.getNameShort());
+        assertEquals(LocalDate.of(2016,10,16),org.getCreateDate());
     }
 
     @Test
