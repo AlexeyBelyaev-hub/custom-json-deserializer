@@ -52,15 +52,13 @@ public class KeyValueArrayDeserializer<T> extends StdDeserializer<T> {
                 if (fields.containsKey(fieldName)) {
                     Field f = fields.get(fieldName);
                     Method m = getSetter(f, clazz);
-                    String value = node.get(valueTitle).asText();
+                    String opt = node.get(valueTitle).asText();
                     Class type = f.getType();
+                    String value = opt.equals("null") ? null : opt;
                     if ((type.equals(LocalDate.class) || type.equals(LocalDateTime.class))) {
                         Temporal date = convertDate(f, value);
                         m.invoke(o, date);
                     } else {
-                        if (value.equals("null")) {
-                            continue;
-                        }
                         m.invoke(o, value);
                     }
                 }
@@ -75,10 +73,13 @@ public class KeyValueArrayDeserializer<T> extends StdDeserializer<T> {
         JsonFormat annotation = f.getAnnotation(JsonFormat.class);
         Temporal date =null;
         if (type.equals(LocalDate.class)){
-            date = annotation.pattern()!=null?
+            date = (value==null)?null:
+                    annotation.pattern()!=null?
                     LocalDate.parse(value,DateTimeFormatter.ofPattern(annotation.pattern())):LocalDate.parse(value);
         }else if (type.equals(LocalDateTime.class)){
-            date  = annotation.pattern()!=null?
+            date  = (value==null)?
+                    null:
+                    annotation.pattern()!=null?
                     LocalDateTime.parse(value, DateTimeFormatter.ofPattern(annotation.pattern())):LocalDateTime.parse(value);
         }
         return date;

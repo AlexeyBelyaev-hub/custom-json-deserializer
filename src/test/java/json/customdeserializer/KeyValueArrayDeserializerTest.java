@@ -58,6 +58,49 @@ class KeyValueArrayDeserializerTest {
         assertEquals(LocalDate.of(2016,10,16),org.getCreateDate());
     }
 
+
+    @Test
+    void testDeserializeNullDate() throws IOException {
+        //given
+        String json =
+                "[\n" +
+                        "            {\n" +
+                        "                \"column\": \"oid\",\n" +
+                        "                \"value\": \"1\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "                \"column\": \"nameFull\",\n" +
+                        "                \"value\": \"Company 1\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "                \"column\": \"nameShort\",\n" +
+                        "                \"value\": \"C1\"\n" +
+                        "            },\n" +
+                        "            {\n" +
+                        "                \"column\": \"oldOid\",\n" +
+                        "                \"value\": \"2\"\n" +
+                        "            }," +
+                        " {\n" +
+                        "                \"column\": \"createDate\",\n" +
+                        "                \"value\": \"null\"\n" +
+                        "            }" +
+                        "        ]";
+
+        ObjectMapper mapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addDeserializer(Org.class, new KeyValueArrayDeserializer<>(Org.class,"column","value"));
+        mapper.registerModule(module);
+        //when
+        Org org = mapper.readValue(json, Org.class);
+        //then
+        assertEquals("1", org.getOid());
+        assertEquals(
+                "Company 1",
+                org.getNameFull());
+        assertEquals("C1", org.getNameShort());
+        assertNull(org.getCreateDate());
+    }
+
     @Test
     void testDeserializeNotEnoughFields() throws IOException {
         //given
